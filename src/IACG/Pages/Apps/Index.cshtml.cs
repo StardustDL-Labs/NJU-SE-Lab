@@ -17,13 +17,13 @@ namespace IACG.Pages.Apps
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public class PostModel
+        public class BindModel
         {
             public string QueryName { get; set; }
         }
 
         [BindProperty]
-        public PostModel PostData { get; set; }
+        public BindModel BindData { get; set; } = new BindModel();
 
         public IndexModel(IACG.Data.ApplicationDbContext context,
             UserManager<ApplicationUser> userManager)
@@ -34,36 +34,21 @@ namespace IACG.Pages.Apps
 
         public IList<App> App { get; set; }
 
-        IQueryable<App> GetInitial()
+        public async Task OnGetAsync(string name = null)
         {
-            return from a in _context.Apps.Include(a => a.User)
-                   where a.UserId == _userManager.GetUserId(User)
-                   select a;
+            var query = from a in _context.Apps.Include(a => a.User)
+                        where a.UserId == _userManager.GetUserId(User)
+                        select a;
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(a => a.Name.Contains(name));
+            }
+            App = await query.ToListAsync();
         }
 
-        public async Task OnGetAsync()
+        public IActionResult OnPostQuery()
         {
-            App = await GetInitial().ToListAsync();
-        }
-
-        public async Task<IActionResult> OnPostQueryAsync()
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(PostData.QueryName))
-                {
-                    App = await GetInitial().ToListAsync();
-                }
-                else
-                {
-                    App = await (from a in GetInitial() where a.Name.Contains(PostData.QueryName) select a).ToListAsync();
-                }
-            }
-            catch
-            {
-                App = Array.Empty<App>();
-            }
-            return Page();
+            return RedirectToRoute(new { name = BindData.QueryName });
         }
     }
 }

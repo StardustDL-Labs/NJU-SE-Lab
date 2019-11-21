@@ -7,14 +7,14 @@
 }
 
 <ul class="breadcrumb">
-    <li class="breadcrumb-item"><a asp-page="/Index">StarOJ</a></li>
+    <li class="breadcrumb-item"><a asp-page="/Index">IACG</a></li>
     <li class="breadcrumb-item active">@ViewData["Title"]</li>
 </ul>
 
 <div class="text-center" style="width:100%">
     <form method="post" class="form-inline" style="display:inline-flex">
         <label class="control-label">@Html.DisplayNameFor(model => model.App[0].Name)</label>
-        <input class="form-control" asp-for="PostData.QueryName" style="margin-left:10px; width:150px" />
+        <input class="form-control" asp-for="BindData.QueryName" style="margin-left:10px; width:150px" />
         <button type="submit" asp-page-handler="Query" class="btn btn-outline-dark" style="margin-left:10px">
             <i class="fa fa-search"></i>
         </button>

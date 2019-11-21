@@ -8,6 +8,7 @@ namespace IACG.Data
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "应用")]
         public int AppId { get; set; }
 
         [Required]

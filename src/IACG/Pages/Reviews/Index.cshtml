@@ -1,0 +1,77 @@
+﻿@page
+@model IACG.Pages.Reviews.IndexModel
+
+@{
+    ViewData["Title"] = "全部审核";
+    ViewData["Id"] = "Reviews";
+}
+
+
+<ul class="breadcrumb">
+    <li class="breadcrumb-item"><a asp-page="/Index">IACG</a></li>
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+</ul>
+
+<div class="text-center" style="width:100%">
+    <form method="post" class="form-inline" style="display:inline-flex">
+        <label class="control-label">@Html.DisplayNameFor(model => model.Review[0].AppId)</label>
+        <input class="form-control"  style="margin-left:10px; width:150px" />
+        <select class="form-control" asp-for="PostData.QueryAppId" asp-items="ViewBag.AppId"></select>
+        <button type="submit" asp-page-handler="Query" class="btn btn-outline-dark" style="margin-left:10px">
+            <i class="fa fa-search"></i>
+        </button>
+        <a asp-page="./Create" class="btn btn-outline-success" style="margin-left:10px">
+            <i class="fa fa-plus"></i>
+        </a>
+    </form>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Review[0])
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review[0].User)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review[0].Result)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review[0].Comment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review[0].LastModifyTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Review)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AppId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Result)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Comment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastModifyTime)
+                </td>
+                <td>
+                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

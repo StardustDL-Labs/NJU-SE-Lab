@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <Folder Include="Pages\Grades\" />
-    <Folder Include="Pages\Reviews\" />
   </ItemGroup>
 
 </Project>
