@@ -149,7 +149,7 @@ namespace IACG.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AppId")
+                    b.Property<int?>("AppId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -166,6 +166,8 @@ namespace IACG.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppId");
 
                     b.HasIndex("UserId");
 
@@ -179,7 +181,7 @@ namespace IACG.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AppId")
+                    b.Property<int?>("AppId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -196,6 +198,8 @@ namespace IACG.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppId");
 
                     b.HasIndex("UserId");
 
@@ -357,6 +361,10 @@ namespace IACG.Migrations
 
             modelBuilder.Entity("IACG.Data.Grade", b =>
                 {
+                    b.HasOne("IACG.Data.App", "App")
+                        .WithMany()
+                        .HasForeignKey("AppId");
+
                     b.HasOne("IACG.Data.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -366,6 +374,10 @@ namespace IACG.Migrations
 
             modelBuilder.Entity("IACG.Data.Review", b =>
                 {
+                    b.HasOne("IACG.Data.App", "App")
+                        .WithMany()
+                        .HasForeignKey("AppId");
+
                     b.HasOne("IACG.Data.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")

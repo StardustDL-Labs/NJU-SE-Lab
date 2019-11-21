@@ -7,9 +7,10 @@ namespace IACG.Data
     {
         public int Id { get; set; }
 
-        [Required]
+        public int? AppId { get; set; }
+
         [Display(Name = "应用")]
-        public int AppId { get; set; }
+        public App App { get; set; }
 
         [Required]
         public string UserId { get; set; }

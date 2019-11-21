@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IACG.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191121142003_v2")]
-    partial class v2
+    [Migration("20191121144429_v0")]
+    partial class v0
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -100,6 +100,10 @@ namespace IACG.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(256)")
                         .HasMaxLength(256);
@@ -147,7 +151,7 @@ namespace IACG.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AppId")
+                    b.Property<int?>("AppId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -164,6 +168,8 @@ namespace IACG.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppId");
 
                     b.HasIndex("UserId");
 
@@ -177,7 +183,7 @@ namespace IACG.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AppId")
+                    b.Property<int?>("AppId")
                         .HasColumnType("int");
 
                     b.Property<string>("Comment")
@@ -194,6 +200,8 @@ namespace IACG.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AppId");
 
                     b.HasIndex("UserId");
 
@@ -355,6 +363,10 @@ namespace IACG.Migrations
 
             modelBuilder.Entity("IACG.Data.Grade", b =>
                 {
+                    b.HasOne("IACG.Data.App", "App")
+                        .WithMany()
+                        .HasForeignKey("AppId");
+
                     b.HasOne("IACG.Data.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -364,6 +376,10 @@ namespace IACG.Migrations
 
             modelBuilder.Entity("IACG.Data.Review", b =>
                 {
+                    b.HasOne("IACG.Data.App", "App")
+                        .WithMany()
+                        .HasForeignKey("AppId");
+
                     b.HasOne("IACG.Data.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
