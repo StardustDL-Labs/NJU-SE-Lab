@@ -35,10 +35,13 @@ namespace IACG.Data
                 {
                     Email = "admin@iacg.internal",
                     UserName = "admin",
+                    Name = "管理员",
                     EmailConfirmed = true,
                 };
                 await userManager.CreateAsync(user, "123456");
                 await userManager.AddToRoleAsync(user, nameof(UserRoles.Administrator));
+                await userManager.AddToRoleAsync(user, nameof(UserRoles.Enterprise));
+                await userManager.AddToRoleAsync(user, nameof(UserRoles.Professional));
             }
         }
 

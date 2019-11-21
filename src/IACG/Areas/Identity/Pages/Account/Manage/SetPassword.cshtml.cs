@@ -53,12 +53,7 @@ namespace IACG.Areas.Identity.Pages.Account.Manage
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
 
-            if (hasPassword)
-            {
-                return RedirectToPage("./ChangePassword");
-            }
-
-            return Page();
+            return hasPassword ? RedirectToPage("./ChangePassword") : (IActionResult)Page();
         }
 
         public async Task<IActionResult> OnPostAsync()

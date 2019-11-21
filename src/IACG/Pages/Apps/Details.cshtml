@@ -1,0 +1,44 @@
+﻿@page
+@model IACG.Pages.Apps.DetailsModel
+
+@{
+    ViewData["Title"] = "应用详情";
+    ViewData["Id"] = "Apps";
+}
+
+<h1>详情</h1>
+
+<div>
+    <h4>应用</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.App.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.App.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.App.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.App.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.App.User)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.App.User.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.App.LastModifyTime)
+        </dt>
+        <dd class="col-sm-10">
+            <timeoffset-display value="Model.App.LastModifyTime"></timeoffset-display>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.App.Id">编辑</a> |
+    <a asp-page="./Index">回到列表</a>
+</div>

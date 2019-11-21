@@ -23,6 +23,7 @@ namespace IACG.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
+        [Display(Name = "用户名")]
         public string Username { get; set; }
 
         [TempData]
@@ -33,8 +34,13 @@ namespace IACG.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            [Required]
+            [Display(Name = "名称")]
+            [StringLength(100, ErrorMessage = "{0} 的长度不短于 {2} 个字符且不长于 {1} 个字符。", MinimumLength = 4)]
+            public string Name { get; set; }
+
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "手机号")]
             public string PhoneNumber { get; set; }
         }
 
@@ -47,6 +53,7 @@ namespace IACG.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                Name = user.Name,
                 PhoneNumber = phoneNumber
             };
         }
@@ -77,19 +84,28 @@ namespace IACG.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+                if (Input.PhoneNumber != phoneNumber)
                 {
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
+                    var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+                    if (!setPhoneResult.Succeeded)
+                    {
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        throw new InvalidOperationException($"Unexpected error occurred setting phone number for user with ID '{userId}'.");
+                    }
+                }
+            }
+            {
+                if(Input.Name != user.Name)
+                {
+                    user.Name = Input.Name;
+                    await _userManager.UpdateAsync(user);
                 }
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "您的个人资料已更新。";
             return RedirectToPage();
         }
     }

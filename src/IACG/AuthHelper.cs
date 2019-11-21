@@ -10,6 +10,8 @@ namespace IACG
 {
     public static class AuthHelper
     {
+        public static async Task<ApplicationUser> TryGetUser(ClaimsPrincipal user, UserManager<ApplicationUser> manager) => await manager.GetUserAsync(user);
+
         public static async Task<string> TryGetUserEmail(ClaimsPrincipal user, UserManager<ApplicationUser> manager)
         {
             try

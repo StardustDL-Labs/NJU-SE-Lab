@@ -18,10 +18,7 @@ namespace IACG.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ResetPasswordModel(UserManager<ApplicationUser> userManager)
-        {
-            _userManager = userManager;
-        }
+        public ResetPasswordModel(UserManager<ApplicationUser> userManager) => _userManager = userManager;
 
         [BindProperty]
         public InputModel Input { get; set; }

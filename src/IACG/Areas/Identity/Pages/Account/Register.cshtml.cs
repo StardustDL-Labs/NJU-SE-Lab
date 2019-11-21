@@ -48,24 +48,29 @@ namespace IACG.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [Display(Name = "Name")]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 4)]
+            [Display(Name = "用户名")]
+            [StringLength(100, ErrorMessage = "{0} 的长度不短于 {2} 个字符且不长于 {1} 个字符。", MinimumLength = 4)]
+            public string UserName { get; set; }
+
+            [Required]
+            [Display(Name = "名称")]
+            [StringLength(100, ErrorMessage = "{0} 的长度不短于 {2} 个字符且不长于 {1} 个字符。", MinimumLength = 4)]
             public string Name { get; set; }
 
             [Required]
             [EmailAddress]
-            [Display(Name = "Email")]
+            [Display(Name = "邮箱")]
             public string Email { get; set; }
 
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0} 的长度不短于 {2} 个字符且不长于 {1} 个字符。", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "密码")]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "确认密码")]
+            [Compare("Password", ErrorMessage = "两次密码不一致。")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -77,11 +82,11 @@ namespace IACG.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Name, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.UserName, Name = Input.Name, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
@@ -92,7 +97,7 @@ namespace IACG.Areas.Identity.Pages.Account
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code },
+                        values: new { area = "Identity", userId = user.Id, code },
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",

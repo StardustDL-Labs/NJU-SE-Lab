@@ -29,7 +29,7 @@ namespace IACG
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "数据库数据初始化错误.");
+                    logger.LogError(ex, "DB init error.");
 
                 }
             }

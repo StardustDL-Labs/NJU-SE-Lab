@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - IACG</title>
+    <title>@ViewData["Title"] - 工业APP分类分级和测评系统</title>
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
@@ -18,9 +18,9 @@
     </environment>
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
+<body style="padding-top:70px">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-page="/Index">IACG</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
@@ -30,11 +30,35 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                        <li class="nav-item @((string)ViewData["Id"] == "Home" ? "active":"")" style="margin-left:10px;">
+                            <a class="nav-link" asp-area="" asp-page="/Index">
+                                <i class="fa fa-home" style="margin-right:3px"></i>
+                                首页
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                        <li class="nav-item @((string)ViewData["Id"] == "Apps" ? "active":"")" style="margin-left:10px;">
+                            <a class="nav-link" asp-area="" asp-page="/Apps/Index">
+                                <i class="fa fa-th" style="margin-right:3px"></i>
+                                应用
+                            </a>
+                        </li>
+                        <li class="nav-item @((string)ViewData["Id"] == "Reviews" ? "active":"")" style="margin-left:10px;">
+                            <a class="nav-link" asp-area="" asp-page="/Reviews/Index">
+                                <i class="fa fa-clipboard-check" style="margin-right:3px"></i>
+                                审核
+                            </a>
+                        </li>
+                        <li class="nav-item @((string)ViewData["Id"] == "Grades" ? "active":"")" style="margin-left:10px;">
+                            <a class="nav-link" asp-area="" asp-page="/Grades/Index">
+                                <i class="fa fa-star-half-alt" style="margin-right:3px"></i>
+                                评级
+                            </a>
+                        </li>
+                        <li class="nav-item @((string)ViewData["Id"] == "Admin" ? "active":"")" style="margin-left:10px;">
+                            <a class="nav-link" asp-area="" asp-page="/Admin/Index">
+                                <i class="fa fa-cogs" style="margin-right:3px"></i>
+                                管理
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -49,12 +73,24 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - IACG - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            <i class="fa fa-copyright"></i> 2019 - IACG - <a asp-area="" asp-page="/Privacy"><i class="fa fa-user-secret"></i></a> - <a href="https://github.com/StardustDL/NJU-SE-Lab"><i class="fa fa-code-branch"></i></a>
         </div>
     </footer>
 
-    <script src="~/lib/jquery/jquery.min.js"></script>
-    <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.min.js"></script>
+    <environment include="Development">
+        <script src="~/lib/jquery/jquery.min.js"></script>
+        <script src="~/lib/twitter-bootstrap/js/bootstrap.min.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+                asp-fallback-src="~/lib/jquery/jquery.min.js"
+                crossorigin="anonymous">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
+                asp-fallback-src="~/lib/twitter-bootstrap/js/bootstrap.min.js"
+                crossorigin="anonymous">
+        </script>
+    </environment>
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)

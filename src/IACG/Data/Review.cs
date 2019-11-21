@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace IACG.Data
 {
@@ -17,5 +18,7 @@ namespace IACG.Data
         public ReviewResult Result { get; set; }
 
         public string Comment { get; set; }
+
+        public DateTimeOffset LastModifyTime { get; set; }
     }
 }

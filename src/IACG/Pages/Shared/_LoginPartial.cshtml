@@ -8,14 +8,14 @@
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                 <img gravatar="@(await AuthHelper.TryGetUserEmail(User,UserManager))" size="24" default="mp" style="display:inline" class="rounded" />
-                <span style="margin-left:5px;">@User.Identity.Name</span>
+                <span style="margin-left:5px;">@((await AuthHelper.TryGetUser(User,UserManager)).Name)</span>
             </a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
                 <button type="submit" class="nav-link btn btn-link text-dark">
                     <i class="fa fa-sign-out-alt" style="margin-right:3px"></i>
-                    Logout
+                    退出
                 </button>
             </form>
         </li>
@@ -23,12 +23,15 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">
+                <i class="fa fa-user-plus" style="margin-right:3px"></i>  
+                注册
+            </a>
         </li>
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">
                 <i class="fa fa-sign-in-alt" style="margin-right:3px"></i>
-                Login
+                登录
             </a>
         </li>
     }

@@ -17,10 +17,7 @@ namespace IACG.Areas.Identity.Pages.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ConfirmEmailModel(UserManager<ApplicationUser> userManager)
-        {
-            _userManager = userManager;
-        }
+        public ConfirmEmailModel(UserManager<ApplicationUser> userManager) => _userManager = userManager;
 
         [TempData]
         public string StatusMessage { get; set; }

@@ -18,14 +18,6 @@ namespace IACG.Areas.Identity.Pages.Account.Manage
         [TempData]
         public string StatusMessage { get; set; }
 
-        public IActionResult OnGet()
-        {
-            if (RecoveryCodes == null || RecoveryCodes.Length == 0)
-            {
-                return RedirectToPage("./TwoFactorAuthentication");
-            }
-
-            return Page();
-        }
+        public IActionResult OnGet() => RecoveryCodes == null || RecoveryCodes.Length == 0 ? RedirectToPage("./TwoFactorAuthentication") : (IActionResult)Page();
     }
 }

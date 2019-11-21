@@ -32,6 +32,7 @@ namespace IACG.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            [Display(Name = "邮箱")]
             [EmailAddress]
             public string Email { get; set; }
         }
