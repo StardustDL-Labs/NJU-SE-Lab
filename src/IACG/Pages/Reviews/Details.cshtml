@@ -6,6 +6,17 @@
     ViewData["Id"] = "Reviews";
 }
 
+<ul class="breadcrumb">
+    <li class="breadcrumb-item"><a asp-page="/Index">IACG</a></li>
+    <li class="breadcrumb-item"><a asp-page="./Index">审核</a></li>
+    <li class="breadcrumb-item">
+        <a asp-page="./Details" asp-route-id="@Model.Review.Id">
+            @Html.DisplayFor(model => model.Review.Id)
+        </a>
+    </li>
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+</ul>
+
 <h1>详情</h1>
 
 <div>

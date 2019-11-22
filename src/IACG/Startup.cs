@@ -12,6 +12,7 @@ using IACG.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IACG
 {
@@ -39,6 +40,9 @@ namespace IACG
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddRazorPages();
+
+            services.AddScoped<IAuthorizationHandler, Helpers.AppAuthorizationHandler>();
+            services.AddScoped<IAuthorizationHandler, Helpers.ReviewAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -7,7 +7,7 @@
 <h1>@ViewData["Title"]</h1>
 
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <h4>创建新账户</h4>
             <hr />
@@ -37,7 +37,19 @@
                 <input asp-for="Input.ConfirmPassword" class="form-control" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary">注册</button>
+            <div class="form-group">
+                <div class="btn-group-lg text-center">
+                    <button type="submit" asp-route-userRole="Enterprise" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-primary m-2">
+                        <i class="fa fa-building" style="margin-right:5px"></i>
+                        我是企业用户
+                    </button>
+                    <button type="submit" asp-route-userRole="Professional" asp-route-returnUrl="@Model.ReturnUrl" class="btn btn-success m-2">
+                        <i class="fa fa-user-tie" style="margin-right:5px"></i>
+                        我是专家用户
+                    </button>
+                </div>
+            </div>
+            
         </form>
     </div>
     <!--<div class="col-md-6 col-md-offset-2">

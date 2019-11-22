@@ -1,8 +1,9 @@
 ﻿@page
 @model IACG.Pages.Reviews.IndexModel
+@inject IAuthorizationService AuthorizationService
 
 @{
-    ViewData["Title"] = "全部审核";
+    ViewData["Title"] = "审核";
     ViewData["Id"] = "Reviews";
     ViewData["SelectResult"] = Enumerable.Empty<SelectListItem>().Append(new SelectListItem("全部", "null")).Concat(Html.GetEnumSelectList<ReviewResult>()).ToList();
 }
@@ -63,7 +64,7 @@
                     @Html.DisplayFor(modelItem => item.User.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Result)
+                    <review-result value="@item.Result"></review-result>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Comment)
@@ -73,12 +74,18 @@
                 </td>
                 <td>
                     <div class="btn-group-sm">
-                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">
-                            <i class="fa fa-trash"></i>
-                        </a>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, item, ModelOperations.Update)).Succeeded)
+                        {
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, item, ModelOperations.Delete)).Succeeded)
+                        {
+                            <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        }
                     </div>
                 </td>
             </tr>

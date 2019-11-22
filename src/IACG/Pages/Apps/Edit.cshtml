@@ -6,6 +6,17 @@
     ViewData["Id"] = "Apps";
 }
 
+<ul class="breadcrumb">
+    <li class="breadcrumb-item"><a asp-page="/Index">IACG</a></li>
+    <li class="breadcrumb-item"><a asp-page="./Index">应用</a></li>
+    <li class="breadcrumb-item">
+        <a asp-page="./Details" asp-route-id="@Model.App.Id">
+            @Html.DisplayFor(model => model.App.Name)
+        </a>
+    </li>
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+</ul>
+
 <h1>编辑</h1>
 
 <h4>应用</h4>
@@ -14,8 +25,8 @@
     <div class="col-md-12">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="App.Id"/>
-            <input type="hidden" asp-for="App.UserId"/>
+            <input type="hidden" asp-for="App.Id" />
+            <input type="hidden" asp-for="App.UserId" />
             <div class="form-group">
                 <label asp-for="App.Name" class="control-label"></label>
                 <input asp-for="App.Name" class="form-control" />
@@ -23,7 +34,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="App.Description" class="control-label"></label>
-                <textarea asp-for="App.Description" class="form-control"  style="height: 500px"></textarea>
+                <textarea asp-for="App.Description" class="form-control" style="height: 500px"></textarea>
                 <span asp-validation-for="App.Description" class="text-danger"></span>
             </div>
             <input type="hidden" asp-for="App.LastModifyTime" />

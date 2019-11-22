@@ -6,6 +6,17 @@
     ViewData["Id"] = "Apps";
 }
 
+<ul class="breadcrumb">
+    <li class="breadcrumb-item"><a asp-page="/Index">IACG</a></li>
+    <li class="breadcrumb-item"><a asp-page="./Index">应用</a></li>
+    <li class="breadcrumb-item">
+        <a asp-page="./Details" asp-route-id="@Model.App.Id">
+            @Html.DisplayFor(model => model.App.Name)
+        </a>
+    </li>
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+</ul>
+
 <h1>审核</h1>
 
 <h3>您确定要审核吗？</h3>

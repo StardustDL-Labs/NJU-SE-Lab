@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace IACG.Pages.Apps
 {
-    [Authorize(Roles = nameof(UserRoles.Enterprise))]
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
@@ -37,8 +37,12 @@ namespace IACG.Pages.Apps
         public async Task OnGetAsync(string name = null)
         {
             var query = from a in _context.Apps.Include(a => a.User)
-                        where a.UserId == _userManager.GetUserId(User)
                         select a;
+
+            if (User.IsInRole(nameof(UserRoles.Enterprise)))
+            {
+                query = query.Where(a => a.UserId == _userManager.GetUserId(User));
+            }
             if (!string.IsNullOrEmpty(name))
             {
                 query = query.Where(a => a.Name.Contains(name));

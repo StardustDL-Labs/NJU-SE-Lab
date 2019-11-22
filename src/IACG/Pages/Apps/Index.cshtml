@@ -1,8 +1,9 @@
 ﻿@page
 @model IACG.Pages.Apps.IndexModel
+@inject IAuthorizationService AuthorizationService
 
 @{
-    ViewData["Title"] = "全部应用";
+    ViewData["Title"] = "应用";
     ViewData["Id"] = "Apps";
 }
 
@@ -18,9 +19,12 @@
         <button type="submit" asp-page-handler="Query" class="btn btn-outline-dark" style="margin-left:10px">
             <i class="fa fa-search"></i>
         </button>
-        <a asp-page="./Create" class="btn btn-outline-success" style="margin-left:10px">
-            <i class="fa fa-plus"></i>
-        </a>
+        @if(User.IsInRole(nameof(UserRoles.Enterprise)) || User.IsInRole(nameof(UserRoles.Administrator)))
+        {
+            <a asp-page="./Create" class="btn btn-outline-success" style="margin-left:10px">
+                <i class="fa fa-plus"></i>
+            </a>
+        }
     </form>
 </div>
 
@@ -66,15 +70,24 @@
                 </td>
                 <td>
                     <div class="btn-group-sm">
-                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <a asp-page="./Review" asp-route-id="@item.Id" class="btn btn-outline-info">
-                            <i class="fa fa-check-circle"></i>
-                        </a>
-                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">
-                            <i class="fa fa-trash"></i>
-                        </a>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, item, ModelOperations.Update)).Succeeded)
+                        {
+                            <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, item, ModelAppOperations.Review)).Succeeded)
+                        {
+                            <a asp-page="./Review" asp-route-id="@item.Id" class="btn btn-outline-info">
+                                <i class="fa fa-check-circle"></i>
+                            </a>
+                        }
+                        @if ((await AuthorizationService.AuthorizeAsync(User, item, ModelOperations.Delete)).Succeeded)
+                        {
+                            <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">
+                                <i class="fa fa-trash"></i>
+                            </a>
+                        }
                     </div>
                 </td>
             </tr>

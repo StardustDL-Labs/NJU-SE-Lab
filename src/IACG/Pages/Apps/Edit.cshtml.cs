@@ -9,20 +9,24 @@ using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using IACG.Helpers;
 
 namespace IACG.Pages.Apps
 {
-    [Authorize(Roles = nameof(UserRoles.Enterprise))]
+    [Authorize]
     public class EditModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public EditModel(IACG.Data.ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         [BindProperty]
@@ -32,17 +36,25 @@ namespace IACG.Pages.Apps
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             App = await _context.Apps
                 .Include(a => a.User).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (App == null || App.UserId != _userManager.GetUserId(User))
+            if (App == null)
             {
                 return NotFound();
             }
-            return Page();
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, App, ModelOperations.Update);
+            if (authorizationResult.Succeeded)
+            {
+                return Page();
+            }
+            else
+            {
+                return Forbid();
+            }
         }
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
@@ -56,18 +68,25 @@ namespace IACG.Pages.Apps
 
             var app = await _context.Apps.FindAsync(id);
 
-            if (app == null || app.UserId != _userManager.GetUserId(User))
+            if (app == null)
             {
                 return NotFound(); 
             }
 
-            app.Name = App.Name;
-            app.Description = App.Description;
-            app.LastModifyTime = DateTimeOffset.Now;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, app, ModelOperations.Update);
+            if (authorizationResult.Succeeded)
+            {
+                app.Name = App.Name;
+                app.Description = App.Description;
+                app.LastModifyTime = DateTimeOffset.Now;
+                await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("./Index");
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                return Forbid();
+            }
         }
     }
 }

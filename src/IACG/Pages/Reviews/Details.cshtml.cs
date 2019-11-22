@@ -6,16 +6,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using IACG.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using IACG.Helpers;
 
 namespace IACG.Pages.Reviews
 {
+    [Authorize]
     public class DetailsModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public DetailsModel(IACG.Data.ApplicationDbContext context)
+        public DetailsModel(IACG.Data.ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
+            _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         public Review Review { get; set; }
@@ -24,7 +34,7 @@ namespace IACG.Pages.Reviews
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             Review = await _context.Reviews
@@ -34,7 +44,15 @@ namespace IACG.Pages.Reviews
             {
                 return NotFound();
             }
-            return Page();
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, Review, ModelOperations.Read);
+            if (authorizationResult.Succeeded)
+            {
+                return Page();
+            }
+            else
+            {
+                return Forbid();
+            }
         }
     }
 }

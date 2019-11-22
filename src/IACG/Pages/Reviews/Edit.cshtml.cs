@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Identity;
+using IACG.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IACG.Pages.Reviews
 {
@@ -15,12 +17,15 @@ namespace IACG.Pages.Reviews
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public EditModel(IACG.Data.ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         [BindProperty]
@@ -30,22 +35,30 @@ namespace IACG.Pages.Reviews
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             Review = await _context.Reviews
-                .Include(r => r.User).Include(r => r.App).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.User)
+                .Include(r => r.App).ThenInclude(a => a.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (Review == null || Review.UserId != _userManager.GetUserId(User))
+            if (Review == null)
             {
                 return NotFound();
             }
-            return Page();
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, Review, ModelOperations.Update);
+            if (authorizationResult.Succeeded)
+            {
+                return Page();
+            }
+            else
+            {
+                return Forbid();
+            }
         }
 
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync(int? id)
+        async Task<IActionResult> Posting(int? id, ReviewResult result)
         {
             if (!ModelState.IsValid)
             {
@@ -54,18 +67,41 @@ namespace IACG.Pages.Reviews
 
             var review = await _context.Reviews.FindAsync(id);
 
-            if (review == null || review.UserId != _userManager.GetUserId(User))
+            if (review == null)
             {
                 return NotFound();
             }
 
-            review.Result = Review.Result;
-            review.Comment = Review.Comment;
-            review.LastModifyTime = DateTimeOffset.Now;
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, review, ModelOperations.Update);
+            if (authorizationResult.Succeeded)
+            {
+                review.Result = result;
+                review.Comment = Review.Comment;
+                review.LastModifyTime = DateTimeOffset.Now;
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
+
+        public Task<IActionResult> OnPostWaitingAsync(int? id)
+        {
+            return Posting(id, ReviewResult.Waiting);
+        }
+
+        public Task<IActionResult> OnPostAcceptAsync(int? id)
+        {
+            return Posting(id, ReviewResult.Accept);
+        }
+
+        public Task<IActionResult> OnPostRejectAsync(int? id)
+        {
+            return Posting(id, ReviewResult.Reject);
         }
     }
 }

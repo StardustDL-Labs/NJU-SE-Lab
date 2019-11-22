@@ -8,20 +8,24 @@ using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using IACG.Helpers;
 
 namespace IACG.Pages.Apps
 {
-    [Authorize(Roles = nameof(UserRoles.Enterprise))]
+    [Authorize]
     public class DeleteModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public DeleteModel(IACG.Data.ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         [BindProperty]
@@ -37,13 +41,21 @@ namespace IACG.Pages.Apps
             App = await _context.Apps
                 .Include(a => a.User).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (App == null || App.UserId != _userManager.GetUserId(User))
+            if (App == null)
             {
                 return NotFound();
             }
             else
             {
-                return (IActionResult)Page();
+                var authorizationResult = await _authorizationService.AuthorizeAsync(User, App, ModelOperations.Delete);
+                if (authorizationResult.Succeeded)
+                {
+                    return Page();
+                }
+                else
+                {
+                    return Forbid();
+                }
             }
         }
 
@@ -51,18 +63,26 @@ namespace IACG.Pages.Apps
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             App = await _context.Apps.FindAsync(id);
 
-            if (App != null && App.UserId == _userManager.GetUserId(User))
+            if (App == null)
+            {
+                return NotFound();
+            }
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, App, ModelOperations.Delete);
+            if(authorizationResult.Succeeded)
             {
                 _context.Apps.Remove(App);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
             }
-
-            return RedirectToPage("./Index");
+            else
+            {
+                return Forbid();
+            }
         }
     }
 }

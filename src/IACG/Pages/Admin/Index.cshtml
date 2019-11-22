@@ -1,0 +1,24 @@
+﻿@page
+@model IACG.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "管理";
+    ViewData["Id"] = "Admin";
+}
+
+<ul class="breadcrumb">
+    <li class="breadcrumb-item"><a asp-page="/Index">IACG</a></li>
+    <li class="breadcrumb-item active">@ViewData["Title"]</li>
+</ul>
+
+<div class="row" style="margin-left:0px">
+    <form method="post">
+        <button type="submit" asp-page-handler="Initialize" class="btn btn-outline-primary">
+            添加种子数据
+        </button>
+    </form>
+    <form method="post" style="margin-left:10px">
+        <button type="submit" asp-page-handler="Clear" class="btn btn-outline-danger">
+            清空数据库（仅保留用户信息）
+        </button>
+    </form>
+</div>

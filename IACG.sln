@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IACG", "src\IACG\IACG.csproj", "{2AB14538-4A77-4530-B223-8D5DEDF6D352}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Base", "test\Test.Base\Test.Base.csproj", "{A0368B5D-AC21-4D50-98A9-FE55726D7DA4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Base", "test\Test.Base\Test.Base.csproj", "{A0368B5D-AC21-4D50-98A9-FE55726D7DA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

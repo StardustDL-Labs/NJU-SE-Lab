@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using IACG.Helpers;
 
 namespace IACG.Pages.Apps
 {
@@ -16,12 +17,15 @@ namespace IACG.Pages.Apps
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public DetailsModel(IACG.Data.ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         public App App { get; set; }
@@ -30,17 +34,25 @@ namespace IACG.Pages.Apps
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             App = await _context.Apps
                 .Include(a => a.User).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (App == null || App.UserId != _userManager.GetUserId(User))
+            if (App == null)
             {
                 return NotFound();
             }
-            return Page();
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, App, ModelOperations.Read);
+            if (authorizationResult.Succeeded)
+            {
+                return Page();
+            }
+            else
+            {
+                return Forbid();
+            }
         }
     }
 }

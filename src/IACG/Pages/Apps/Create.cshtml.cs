@@ -8,23 +8,38 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using IACG.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using IACG.Helpers;
 
 namespace IACG.Pages.Apps
 {
-    [Authorize(Roles = nameof(UserRoles.Enterprise))]
+    [Authorize]
     public class CreateModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public CreateModel(IACG.Data.ApplicationDbContext context, 
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
-        public IActionResult OnGet() => Page();
+        public async Task<IActionResult> OnGetAsync()
+        {
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, null, ModelOperations.Create);
+            if (authorizationResult.Succeeded)
+            {
+                return Page();
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
 
         [BindProperty]
         public App App { get; set; }
@@ -46,9 +61,17 @@ namespace IACG.Pages.Apps
                 LastModifyTime = DateTimeOffset.Now
             };
 
-            _context.Apps.Add(app);
-            await _context.SaveChangesAsync();
-            return RedirectToPage("./Index");
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, app, ModelOperations.Create);
+            if (authorizationResult.Succeeded)
+            {
+                _context.Apps.Add(app);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+            else
+            {
+                return Forbid();
+            }
         }
     }
 }

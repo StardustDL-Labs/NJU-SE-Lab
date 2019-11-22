@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IACG.Pages.Reviews
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
@@ -37,11 +39,24 @@ namespace IACG.Pages.Reviews
 
         public async Task OnGetAsync(int? appId = null, ReviewResult? result = null)
         {
-            ViewData["SelectAppId"] = Enumerable.Empty<SelectListItem>().Append(new SelectListItem("全部", "null")).Concat(_context.Apps.Select(a => new SelectListItem(a.Name, a.Id.ToString()))).ToList();
+            IEnumerable<App> fromApps;
 
-            var query = from a in _context.Reviews.Include(a => a.User).Include(a => a.App)
-                        where a.UserId == _userManager.GetUserId(User)
-                        select a;
+            var query = from a in _context.Reviews.Include(a => a.User).Include(a => a.App) select a;
+
+            if (User.IsInRole(nameof(UserRoles.Enterprise)))
+            {
+                query = query.Where(a => a.App.UserId == _userManager.GetUserId(User));
+                fromApps = _context.Apps.Where(x => x.UserId == _userManager.GetUserId(User));
+            }
+            else
+            {
+                fromApps = _context.Apps;
+                if (User.IsInRole(nameof(UserRoles.Professional)))
+                {
+                    query = query.Where(a => a.UserId == _userManager.GetUserId(User));
+                }
+            }
+
             if (appId != null)
             {
                 query = query.Where(a => a.AppId == appId);
@@ -51,6 +66,8 @@ namespace IACG.Pages.Reviews
                 query = query.Where(a => a.Result == result);
             }
             Review = await query.ToListAsync();
+
+            ViewData["SelectAppId"] = Enumerable.Empty<SelectListItem>().Append(new SelectListItem("全部", "null")).Concat(fromApps.Select(a => new SelectListItem(a.Name, a.Id.ToString()))).ToList();
 
             BindData = new BindModel
             {

@@ -8,20 +8,24 @@ using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using IACG.Helpers;
 
 namespace IACG.Pages.Apps
 {
-    [Authorize(Roles = nameof(UserRoles.Enterprise))]
+    [Authorize]
     public class ReviewModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public ReviewModel(IACG.Data.ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         [BindProperty]
@@ -31,7 +35,7 @@ namespace IACG.Pages.Apps
         {
             if (id == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             App = await _context.Apps
@@ -80,11 +84,26 @@ namespace IACG.Pages.Apps
                 Comment = ""
             };
 
-            _context.Reviews.Add(review);
+            var authorizationResult = await _authorizationService.AuthorizeAsync(User, App, ModelAppOperations.Review);
+            if (authorizationResult.Succeeded)
+            {
+                authorizationResult = await _authorizationService.AuthorizeAsync(User, review, ModelOperations.Create);
+                if (authorizationResult.Succeeded)
+                {
+                    _context.Reviews.Add(review);
+                    await _context.SaveChangesAsync();
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("/Reviews/Details",new { id = review.Id });
+                    return RedirectToPage("/Reviews/Details", new { id = review.Id });
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                return Forbid();
+            }
         }
     }
 }
