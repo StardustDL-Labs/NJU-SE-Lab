@@ -28,7 +28,7 @@ namespace IACG.Pages.Reviews
             }
 
             Review = await _context.Reviews
-                .Include(r => r.User).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(r => r.User).Include(r => r.App).FirstOrDefaultAsync(m => m.Id == id);
 
             if (Review == null)
             {

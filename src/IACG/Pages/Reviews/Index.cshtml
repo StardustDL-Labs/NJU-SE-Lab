@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "全部审核";
     ViewData["Id"] = "Reviews";
+    ViewData["SelectResult"] = Enumerable.Empty<SelectListItem>().Append(new SelectListItem("全部", "null")).Concat(Html.GetEnumSelectList<ReviewResult>()).ToList();
 }
 
 
@@ -14,23 +15,24 @@
 
 <div class="text-center" style="width:100%">
     <form method="post" class="form-inline" style="display:inline-flex">
-        <label class="control-label">@Html.DisplayNameFor(model => model.Review[0].AppId)</label>
-        <input class="form-control"  style="margin-left:10px; width:150px" />
-        <select class="form-control" asp-for="PostData.QueryAppId" asp-items="ViewBag.AppId"></select>
+        <label class="control-label">@Html.DisplayNameFor(model => model.Review[0].App)</label>
+        <select class="form-control" asp-for="BindData.QueryAppId" asp-items="ViewBag.SelectAppId" style="margin-left:10px; width:150px"></select>
+        <label class="control-label" style="margin-left:10px">@Html.DisplayNameFor(model => model.Review[0].Result)</label>
+        <select class="form-control" asp-for="BindData.QueryResult" asp-items="@ViewBag.SelectResult" style="margin-left:10px; width:150px"></select>
         <button type="submit" asp-page-handler="Query" class="btn btn-outline-dark" style="margin-left:10px">
             <i class="fa fa-search"></i>
         </button>
-        <a asp-page="./Create" class="btn btn-outline-success" style="margin-left:10px">
-            <i class="fa fa-plus"></i>
-        </a>
     </form>
 </div>
 
-<table class="table">
+<table class="table table-hover" style="margin-top:10px">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Review[0])
+                @Html.DisplayNameFor(model => model.Review[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Review[0].App)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Review[0].User)
@@ -44,7 +46,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Review[0].LastModifyTime)
             </th>
-            <th></th>
+            <th>操作</th>
         </tr>
     </thead>
     <tbody>
@@ -52,10 +54,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.AppId)
+                    <a asp-page="./Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Id)</a>
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.User.Id)
+                    <a asp-page="/Apps/Details" asp-route-id="@item.AppId">@Html.DisplayFor(modelItem => item.App.Name)</a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Result)
@@ -64,12 +69,17 @@
                     @Html.DisplayFor(modelItem => item.Comment)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.LastModifyTime)
+                    <timeoffset-display value="@item.LastModifyTime"></timeoffset-display>
                 </td>
                 <td>
-                    <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                    <div class="btn-group-sm">
+                        <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-outline-primary">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">
+                            <i class="fa fa-trash"></i>
+                        </a>
+                    </div>
                 </td>
             </tr>
         }

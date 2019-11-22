@@ -2,52 +2,68 @@
 @model IACG.Pages.Reviews.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "编辑审核";
 }
 
-<h1>Edit</h1>
+<h1>编辑</h1>
 
-<h4>Review</h4>
+<h4>审核</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Review.App.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Review.App.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Review.App.Description)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Review.App.Description)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Review.App.User)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Review.App.User.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Review.App.LastModifyTime)
+            </dt>
+            <dd class="col-sm-10">
+                <timeoffset-display value="Model.Review.App.LastModifyTime"></timeoffset-display>
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-6">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Review.Id" />
-            <div class="form-group">
-                <label asp-for="Review.AppId" class="control-label"></label>
-                <input asp-for="Review.AppId" class="form-control" />
-                <span asp-validation-for="Review.AppId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Review.UserId" class="control-label"></label>
-                <select asp-for="Review.UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                <span asp-validation-for="Review.UserId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="Review.AppId" />
+            <input type="hidden" asp-for="Review.UserId" />
             <div class="form-group">
                 <label asp-for="Review.Result" class="control-label"></label>
-                <select asp-for="Review.Result" class="form-control"></select>
+                <select asp-for="Review.Result" asp-items="@Html.GetEnumSelectList<ReviewResult>()" class="form-control"></select>
                 <span asp-validation-for="Review.Result" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Review.Comment" class="control-label"></label>
-                <input asp-for="Review.Comment" class="form-control" />
+                <textarea asp-for="Review.Comment" class="form-control" style="height: 500px"></textarea>
                 <span asp-validation-for="Review.Comment" class="text-danger"></span>
             </div>
+            <input type="hidden" asp-for="Review.LastModifyTime" />
             <div class="form-group">
-                <label asp-for="Review.LastModifyTime" class="control-label"></label>
-                <input asp-for="Review.LastModifyTime" class="form-control" />
-                <span asp-validation-for="Review.LastModifyTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="保存" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Index">回到列表</a>
 </div>
 
 @section Scripts {

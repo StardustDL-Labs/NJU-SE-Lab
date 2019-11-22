@@ -2,26 +2,33 @@
 @model IACG.Pages.Reviews.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "审核详情";
+    ViewData["Id"] = "Reviews";
 }
 
-<h1>Details</h1>
+<h1>详情</h1>
 
 <div>
-    <h4>Review</h4>
+    <h4>审核</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Review.AppId)
+            @Html.DisplayNameFor(model => model.Review.Id)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Review.AppId)
+            @Html.DisplayFor(model => model.Review.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Review.App)
+        </dt>
+        <dd class="col-sm-10">
+            <a asp-page="/Apps/Details" asp-route-id="@Model.Review.AppId">@Html.DisplayFor(modelItem => Model.Review.App.Name)</a>
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Review.User)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Review.User.Id)
+            @Html.DisplayFor(model => model.Review.User.Name)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Review.Result)
@@ -39,11 +46,11 @@
             @Html.DisplayNameFor(model => model.Review.LastModifyTime)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Review.LastModifyTime)
+            <timeoffset-display value="Model.Review.LastModifyTime"></timeoffset-display>
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-page="./Edit" asp-route-id="@Model.Review.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+    <a asp-page="./Edit" asp-route-id="@Model.Review.Id">编辑</a> |
+    <a asp-page="./Index">回到列表</a>
 </div>

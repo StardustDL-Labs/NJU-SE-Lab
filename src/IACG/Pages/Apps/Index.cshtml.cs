@@ -44,6 +44,11 @@ namespace IACG.Pages.Apps
                 query = query.Where(a => a.Name.Contains(name));
             }
             App = await query.ToListAsync();
+
+            BindData = new BindModel
+            {
+                QueryName = name
+            };
         }
 
         public IActionResult OnPostQuery()

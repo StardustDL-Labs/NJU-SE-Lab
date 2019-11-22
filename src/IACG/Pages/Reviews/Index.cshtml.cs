@@ -13,10 +13,10 @@ namespace IACG.Pages.Reviews
 {
     public class IndexModel : PageModel
     {
-        private readonly IACG.Data.ApplicationDbContext _context; 
+        private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public class PostModel
+        public class BindModel
         {
             public int? QueryAppId { get; set; }
 
@@ -24,7 +24,7 @@ namespace IACG.Pages.Reviews
         }
 
         [BindProperty]
-        public PostModel PostData { get; set; }
+        public BindModel BindData { get; set; }
 
         public IndexModel(IACG.Data.ApplicationDbContext context,
             UserManager<ApplicationUser> userManager)
@@ -33,40 +33,35 @@ namespace IACG.Pages.Reviews
             _userManager = userManager;
         }
 
-        public IList<Review> Review { get;set; }
+        public IList<Review> Review { get; set; }
 
-        IQueryable<Review> GetInitial()
+        public async Task OnGetAsync(int? appId = null, ReviewResult? result = null)
         {
-            return from a in _context.Reviews.Include(a => a.User)
-                   where a.UserId == _userManager.GetUserId(User)
-                   select a;
+            ViewData["SelectAppId"] = Enumerable.Empty<SelectListItem>().Append(new SelectListItem("全部", "null")).Concat(_context.Apps.Select(a => new SelectListItem(a.Name, a.Id.ToString()))).ToList();
+
+            var query = from a in _context.Reviews.Include(a => a.User).Include(a => a.App)
+                        where a.UserId == _userManager.GetUserId(User)
+                        select a;
+            if (appId != null)
+            {
+                query = query.Where(a => a.AppId == appId);
+            }
+            if (result != null)
+            {
+                query = query.Where(a => a.Result == result);
+            }
+            Review = await query.ToListAsync();
+
+            BindData = new BindModel
+            {
+                QueryAppId = appId,
+                QueryResult = result
+            };
         }
 
-        public async Task OnGetAsync()
+        public IActionResult OnPostQuery()
         {
-            Review = await GetInitial().ToListAsync();
-        }
-
-        public async Task<IActionResult> OnPostQueryAsync()
-        {
-            try
-            {
-                var query = GetInitial();
-                if (PostData.QueryAppId != null)
-                {
-                    query = query.Where(a => a.AppId==PostData.QueryAppId);
-                }
-                if(PostData.QueryResult != null)
-                {
-                    query = query.Where(a => a.Result == PostData.QueryResult);
-                }
-                Review = await query.ToListAsync();
-            }
-            catch
-            {
-                Review = Array.Empty<Review>();
-            }
-            return Page();
+            return RedirectToRoute(new { appId = BindData.QueryAppId, result = BindData.QueryResult });
         }
     }
 }

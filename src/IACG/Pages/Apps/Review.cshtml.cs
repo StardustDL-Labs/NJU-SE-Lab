@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using IACG.Data;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +12,12 @@ using Microsoft.AspNetCore.Identity;
 namespace IACG.Pages.Apps
 {
     [Authorize(Roles = nameof(UserRoles.Enterprise))]
-    public class EditModel : PageModel
+    public class ReviewModel : PageModel
     {
         private readonly IACG.Data.ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public EditModel(IACG.Data.ApplicationDbContext context,
+        public ReviewModel(IACG.Data.ApplicationDbContext context,
             UserManager<ApplicationUser> userManager)
         {
             _context = context;
@@ -38,36 +37,54 @@ namespace IACG.Pages.Apps
             App = await _context.Apps
                 .Include(a => a.User).FirstOrDefaultAsync(m => m.Id == id);
 
-            if (App == null || App.UserId != _userManager.GetUserId(User))
+            if (App == null)
             {
                 return NotFound();
             }
+
+            var review = await _context.Reviews.FirstOrDefaultAsync(r => r.AppId == App.Id && r.UserId == _userManager.GetUserId(User));
+
+            if (review != null)
+            {
+                return RedirectToPage("/Reviews/Details", new { id = review.Id });
+            }
+
             return Page();
         }
 
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync(int? id)
         {
-            if (!ModelState.IsValid)
+            if (id == null)
             {
-                return Page();
+                return NotFound();
             }
 
-            var app = await _context.Apps.FindAsync(id);
+            App = await _context.Apps.FindAsync(id);
 
-            if (app == null || app.UserId != _userManager.GetUserId(User))
+            if (App == null)
             {
-                return NotFound(); 
+                return NotFound();
             }
 
-            app.Name = App.Name;
-            app.Description = App.Description;
-            app.LastModifyTime = DateTimeOffset.Now;
+            if(await _context.Reviews.AnyAsync(r => r.AppId == App.Id && r.UserId == _userManager.GetUserId(User)))
+            {
+                return BadRequest();
+            }
+
+            Review review = new Review
+            {
+                AppId = App.Id,
+                UserId = _userManager.GetUserId(User),
+                LastModifyTime = DateTimeOffset.Now,
+                Result = ReviewResult.Waiting,
+                Comment = ""
+            };
+
+            _context.Reviews.Add(review);
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Reviews/Details",new { id = review.Id });
         }
     }
 }

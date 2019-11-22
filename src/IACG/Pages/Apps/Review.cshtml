@@ -1,23 +1,18 @@
 ﻿@page
-@model IACG.Pages.Apps.DetailsModel
+@model IACG.Pages.Apps.ReviewModel
 
 @{
-    ViewData["Title"] = "应用详情";
+    ViewData["Title"] = "审核应用";
     ViewData["Id"] = "Apps";
 }
 
-<h1>详情</h1>
+<h1>审核</h1>
 
+<h3>您确定要审核吗？</h3>
 <div>
     <h4>应用</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.App.Id)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.App.Id)
-        </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.App.Name)
         </dt>
@@ -43,8 +38,10 @@
             <timeoffset-display value="Model.App.LastModifyTime"></timeoffset-display>
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.App.Id">编辑</a> |
-    <a asp-page="./Index">回到列表</a>
+
+    <form method="post">
+        <input type="hidden" asp-for="App.Id" />
+        <input type="submit" value="审核" class="btn btn-primary" /> |
+        <a asp-page="./Index">回到列表</a>
+    </form>
 </div>
