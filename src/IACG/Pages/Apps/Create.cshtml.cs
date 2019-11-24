@@ -19,7 +19,7 @@ namespace IACG.Pages.Apps
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
 
-        public CreateModel(IACG.Data.ApplicationDbContext context, 
+        public CreateModel(IACG.Data.ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             IAuthorizationService authorizationService)
         {
@@ -28,17 +28,9 @@ namespace IACG.Pages.Apps
             _authorizationService = authorizationService;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public IActionResult OnGet()
         {
-            var authorizationResult = await _authorizationService.AuthorizeAsync(User, null, ModelOperations.Create);
-            if (authorizationResult.Succeeded)
-            {
-                return Page();
-            }
-            else
-            {
-                return Forbid();
-            }
+            return Page();
         }
 
         [BindProperty]
